@@ -10,6 +10,10 @@ const Post = new Schema({
     required: true,
     default: "",
   },
+  date: {
+    type: Number,
+    required: true,
+  },
   username: {
     type: String,
     required: true,
@@ -17,7 +21,7 @@ const Post = new Schema({
   userID: {
     type: String,
     required: true,
-  }
+  },
 })
 
 module.exports = model('Post', Post)

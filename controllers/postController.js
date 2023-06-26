@@ -1,14 +1,15 @@
+const { successJson, errorJson } = require('../functions/result');
 const Post = require('../model/Post');
 const User = require('../model/User')
 
 class postController {
   async getPosts(req, res) {
     try {
-      const posts = await Post.find().select('-__v')
-      res.json({ status: 'success', body: posts })
+      const posts = await Post.find().select('-__v').sort({"date": -1 })
+      return res.json(successJson(posts))
     } catch (e) {
       console.log(e)
-      res.status(400).json({ status: 'error', message: 'getPosts error' })
+      return res.status(400).json(errorJson('getPosts error'))
     }
   }
 
@@ -17,13 +18,13 @@ class postController {
     try {
       const post = await Post.findById(id).select('-__v')
       if (post) {
-        res.json({ status: 'success', body: post })
+        return res.json(successJson(post))
       } else {
-        res.status(404).json({ status: 404, message: 'Пост не найден' })
+        return res.status(404).json(errorJson('Пост не найден'))
       }
     } catch (e) {
       console.log(e)
-      res.status(400).json({ status: 'error', message: 'getPostID error' })
+      return res.json(errorJson('getPostID error'))
     }
   }
 
@@ -36,7 +37,8 @@ class postController {
       title,
       description,
       username,
-      id
+      userID: id,
+      date: Date.now()
     })
     try {
       await newPost.save()
@@ -45,10 +47,10 @@ class postController {
         id,
         { $push: { "posts": post } },
         { upsert: true, new: true })
-      res.json({ status: 'success', body: newPost })
+        return res.json(successJson(newPost))
     } catch (e) {
       console.log(e)
-      res.status(400).json({ status: 'error', message: 'getPosts error' })
+      return res.status(400).json(errorJson('getPosts error'))
     }
   }
 
@@ -56,11 +58,11 @@ class postController {
     const { id } = req.params
     const { title, description } = req.body
     try {
-      let result = await Post.findByIdAndUpdate(id, { title, description })
-      res.json({ status: 'success', body: result })
+      let result = await Post.findByIdAndUpdate(id, { title, description, date: Date.now() })
+      return res.json(successJson(result))
     } catch (e) {
       console.log(e)
-      res.status(400).json({ status: 'error', message: 'getPosts error' })
+      return res.status(400).json(errorJson('getPosts error'))
     }
   }
 
@@ -72,10 +74,10 @@ class postController {
         req.user.id,
         { $pull: { "posts": id } }
       )
-      res.json({ status: 'success', body: 'Успешно удалено' })
+      return res.json(successJson(id))
     } catch (e) {
       console.log(e)
-      res.status(400).json({ status: 'error', message: 'getPosts error' })
+      return res.status(400).json(errorJson('getPosts error'))
     }
   }
 }
