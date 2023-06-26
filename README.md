@@ -1,6 +1,6 @@
 ## Запросы к серверу
 
-Adress - http://localhost:5000/
+[Адрес сервера](https://twits-backend.svetlanael12.repl.co)
 
 В случае успешного запроса возвращается объект json вида
 ```javascript
